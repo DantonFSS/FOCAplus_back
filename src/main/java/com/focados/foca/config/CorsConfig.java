@@ -19,7 +19,7 @@ public class CorsConfig {
                                 "http://localhost:19006",
                                 "http://127.0.0.1:8081",
                                 "https://focaplus-back.onrender.com",
-                                "https://foc-aplus-front.vercel.app/",
+                                "https://foc-aplus-front.vercel.app/"
 
                         )
                         .allowedMethods("GET", "POST", "PUT", "DELETE")
