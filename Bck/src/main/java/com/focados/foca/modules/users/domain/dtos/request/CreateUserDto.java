@@ -1,0 +1,41 @@
+package com.focados.foca.modules.users.domain.dtos.request;
+
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
+import lombok.Data;
+import org.springframework.stereotype.Component;
+
+import java.time.LocalDateTime;
+
+@Component
+@Data
+public class CreateUserDto {
+    // CPF é opcional - não é obrigatório para cadastro
+    //@Pattern(regexp = "^\\d{11}$", message = "0 CPF deve conter exatamente 11 digitos numéricos")
+    private String cpf;
+
+    @NotNull
+    @NotBlank(message = "Name must not be empty or null...")
+    @Size(min = 3, max = 200)
+    private String name;
+
+    @NotBlank(message = "Username must not be empty or null...")
+    @Size(min = 3, max = 30, message = "Username must be between 3 and 30 characters")
+    private String username;
+
+    @Email
+    @NotNull
+    @NotBlank(message = "Email must not be empty or null...")
+    private String email;
+
+    private String phone;
+
+    @NotNull
+    @NotBlank(message = "Password must not be empty or null...")
+    private String password;
+
+    private LocalDateTime userRegisterDate = LocalDateTime.now();
+}
+
