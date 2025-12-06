@@ -1,14 +1,13 @@
 package com.focados.foca.modules.score.database.entity;
 
 import com.focados.foca.modules.courses.database.entity.UserCourseModel;
-import com.focados.foca.modules.materias.database.entity.DisciplineInstanceModel;
+import com.focados.foca.modules.disciplines.database.entity.DisciplineInstanceModel;
 import com.focados.foca.modules.score.database.entity.enums.ScoreSourceType;
 import com.focados.foca.modules.users.database.entity.UserModel;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 
-import java.math.BigDecimal;
 import java.time.ZonedDateTime;
 import java.util.UUID;
 

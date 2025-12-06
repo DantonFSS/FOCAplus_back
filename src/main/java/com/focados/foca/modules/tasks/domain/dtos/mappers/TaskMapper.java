@@ -1,6 +1,6 @@
 package com.focados.foca.modules.tasks.domain.dtos.mappers;
 
-import com.focados.foca.modules.materias.database.entity.DisciplineInstanceModel;
+import com.focados.foca.modules.disciplines.database.entity.DisciplineInstanceModel;
 import com.focados.foca.modules.tasks.database.entity.TaskModel;
 import com.focados.foca.modules.tasks.domain.dtos.request.CreateTaskDTO;
 import com.focados.foca.modules.tasks.domain.dtos.request.UpdateTaskDTO;

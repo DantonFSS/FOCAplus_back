@@ -1,12 +1,14 @@
 package com.focados.foca.modules.periods.database.entity;
 
 import com.focados.foca.modules.courses.database.entity.CourseModel;
+import com.focados.foca.modules.disciplines.database.entity.DisciplineTemplateModel;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDate;
 import java.time.ZonedDateTime;
+import java.util.List;
 import java.util.UUID;
 
 @Entity
@@ -34,5 +36,13 @@ public class PeriodTemplateModel {
 
     @Column(name = "planned_end")
     private LocalDate plannedEnd;
+
+    @OneToMany(
+            mappedBy = "periodTemplate",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true,
+            fetch = FetchType.LAZY
+    )
+    private List<DisciplineTemplateModel> disciplines;
 
 }

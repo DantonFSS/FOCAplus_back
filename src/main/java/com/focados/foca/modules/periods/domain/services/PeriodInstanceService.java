@@ -1,7 +1,7 @@
 package com.focados.foca.modules.periods.domain.services;
 
 import com.focados.foca.modules.courses.database.repository.UserCourseRepository;
-import com.focados.foca.modules.materias.domain.services.DisciplineInstanceService;
+import com.focados.foca.modules.disciplines.domain.services.DisciplineInstanceService;
 import com.focados.foca.modules.periods.database.entity.PeriodInstanceModel;
 import com.focados.foca.modules.periods.database.entity.PeriodTemplateModel;
 import com.focados.foca.modules.periods.database.repository.PeriodInstanceRepository;

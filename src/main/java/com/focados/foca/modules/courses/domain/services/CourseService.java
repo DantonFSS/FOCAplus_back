@@ -2,6 +2,7 @@ package com.focados.foca.modules.courses.domain.services;
 
 import com.focados.foca.modules.courses.database.entity.CourseModel;
 import com.focados.foca.modules.courses.database.repository.CourseRepository;
+import com.focados.foca.modules.courses.database.repository.UserCourseRepository;
 import com.focados.foca.modules.courses.domain.dtos.mappers.CourseMapper;
 import com.focados.foca.modules.courses.domain.dtos.request.CreateCourseDto;
 import com.focados.foca.modules.courses.domain.dtos.request.UpdateCourseDto;
@@ -29,6 +30,7 @@ public class CourseService {
     private final UserRepository userRepository;
     private final UserCourseService userCourseService;
     private final PeriodTemplateService periodTemplateService;
+    private final UserCourseRepository userCourseRepository;
 
     public CourseResponseDto create(CreateCourseDto dto) {
         UUID userId = AuthUtil.getAuthenticatedUserId();
@@ -156,8 +158,20 @@ public class CourseService {
         if (!course.getCreatedBy().getId().equals(userId)) {
             throw new UserNotAllowedException();
         }
+
+        long totalUsers = userCourseRepository.countByCourseTemplateId(course.getId());
+
+        if (totalUsers > 1) {
+            // ✅ Só arquiva
+            course.setArchived(true);
+            courseRepository.save(course);
+            return;
+        }
+
+        // ✅ Aqui é o ÚNICO usuário → pode apagar tudo fisicamente
         courseRepository.delete(course);
     }
+
 
     public boolean updateCourseIfChanged(UpdateCourseDto dto, CourseModel course) {
         boolean changed = false;

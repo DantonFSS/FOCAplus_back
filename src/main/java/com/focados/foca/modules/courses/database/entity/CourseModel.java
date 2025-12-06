@@ -81,7 +81,10 @@ public class CourseModel {
     @Column(name = "share_code", unique = true, nullable = false)
     private String shareCode;
 
-    @OneToMany(mappedBy = "courseTemplate", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Column(name = "archived", nullable = false)
+    private boolean archived = false;
+
+    @OneToMany(mappedBy = "courseTemplate", cascade = CascadeType.REMOVE, orphanRemoval = true)
     private List<UserCourseModel> userCourses;
 
     @OneToMany(mappedBy = "courseTemplate", cascade = CascadeType.ALL, orphanRemoval = true)

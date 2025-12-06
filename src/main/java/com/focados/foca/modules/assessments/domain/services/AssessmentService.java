@@ -8,9 +8,8 @@ import com.focados.foca.modules.assessments.domain.dtos.mappers.AssessmentMapper
 import com.focados.foca.modules.assessments.domain.dtos.request.CreateAssessmentDTO;
 import com.focados.foca.modules.assessments.domain.dtos.request.UpdateAssessmentDTO;
 import com.focados.foca.modules.assessments.domain.dtos.response.AssessmentResponseDTO;
-import com.focados.foca.modules.materias.database.entity.enums.GradeSystem;
-import com.focados.foca.modules.materias.database.repository.DisciplineInstanceRepository;
-import com.focados.foca.modules.users.database.entity.UserModel;
+import com.focados.foca.modules.disciplines.database.entity.enums.GradeSystem;
+import com.focados.foca.modules.disciplines.database.repository.DisciplineInstanceRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
