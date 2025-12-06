@@ -23,7 +23,7 @@ public class CourseController {
 
     @PostMapping
     public ResponseEntity<CourseResponseDto> create(
-            @RequestBody @Valid CreateCourseDto request
+            @RequestBody CreateCourseDto request
     ) {
         return ResponseEntity.ok(service.create(request));
     }
