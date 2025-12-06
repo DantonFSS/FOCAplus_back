@@ -2,9 +2,11 @@ package com.focados.foca.modules.courses.infra.http.controller;
 
 import com.focados.foca.modules.courses.domain.dtos.request.CreateCourseDto;
 import com.focados.foca.modules.courses.domain.dtos.request.UpdateCourseDto;
+import com.focados.foca.modules.courses.domain.dtos.request.UpdateCourseInfoDto;
 import com.focados.foca.modules.courses.domain.dtos.response.CourseResponseDto;
 import com.focados.foca.modules.courses.domain.services.CourseService;
 import com.focados.foca.modules.courses.domain.services.UserCourseService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -21,7 +23,7 @@ public class CourseController {
 
     @PostMapping
     public ResponseEntity<CourseResponseDto> create(
-            @RequestBody CreateCourseDto request
+            @RequestBody @Valid CreateCourseDto request
     ) {
         return ResponseEntity.ok(service.create(request));
     }
@@ -43,6 +45,15 @@ public class CourseController {
     ) {
         return ResponseEntity.ok(service.update(id, request));
     }
+
+    @PutMapping("/{id}/info")
+    public ResponseEntity<CourseResponseDto> updateInfo(
+            @PathVariable UUID id,
+            @RequestBody UpdateCourseInfoDto request
+    ) {
+        return ResponseEntity.ok(service.updateInfo(id, request));
+    }
+
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable UUID id) {
