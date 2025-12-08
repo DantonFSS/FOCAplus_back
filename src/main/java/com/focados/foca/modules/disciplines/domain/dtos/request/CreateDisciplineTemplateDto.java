@@ -7,5 +7,4 @@ import java.util.UUID;
 public class CreateDisciplineTemplateDto {
     private UUID periodTemplateId;
     private String name;
-    private String notes;
 }

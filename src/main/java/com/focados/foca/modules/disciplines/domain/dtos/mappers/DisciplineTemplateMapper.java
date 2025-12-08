@@ -9,7 +9,7 @@ public class DisciplineTemplateMapper {
         dto.setId(model.getId());
         dto.setPeriodTemplateId(model.getPeriodTemplate().getId());
         dto.setName(model.getName());
-        dto.setNotes(model.getNotes());
+        dto.setNotes(model.getNotes() != null ? model.getNotes() : "");
         return dto;
     }
 }

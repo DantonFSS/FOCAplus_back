@@ -24,7 +24,7 @@ public class DisciplineTemplateModel {
     @Column(nullable = false)
     private String name;
 
-    @Column(columnDefinition = "TEXT")
+    @Column(columnDefinition = "TEXT", nullable = true)
     private String notes;
 
     @OneToMany(

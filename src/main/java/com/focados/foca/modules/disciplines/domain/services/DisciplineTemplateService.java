@@ -31,7 +31,6 @@ public class DisciplineTemplateService {
         DisciplineTemplateModel discipline = new DisciplineTemplateModel();
         discipline.setPeriodTemplate(periodTemplate);
         discipline.setName(dto.getName());
-        discipline.setNotes(dto.getNotes());
 
         disciplineTemplateRepository.save(discipline);
 
