@@ -1,6 +1,7 @@
 package com.focados.foca.modules.courses.domain.services;
 
 import com.focados.foca.modules.courses.database.entity.CourseModel;
+import com.focados.foca.modules.courses.database.entity.UserCourseModel;
 import com.focados.foca.modules.courses.database.repository.CourseRepository;
 import com.focados.foca.modules.courses.database.repository.UserCourseRepository;
 import com.focados.foca.modules.courses.domain.dtos.mappers.CourseMapper;
@@ -8,6 +9,7 @@ import com.focados.foca.modules.courses.domain.dtos.request.CreateCourseDto;
 import com.focados.foca.modules.courses.domain.dtos.request.UpdateCourseDto;
 import com.focados.foca.modules.courses.domain.dtos.request.UpdateCourseInfoDto;
 import com.focados.foca.modules.courses.domain.dtos.response.CourseResponseDto;
+import com.focados.foca.modules.periods.domain.services.PeriodInstanceService;
 import com.focados.foca.modules.periods.domain.services.PeriodTemplateService;
 import com.focados.foca.modules.users.database.entity.UserModel;
 import com.focados.foca.modules.users.database.repository.UserRepository;
@@ -31,6 +33,7 @@ public class CourseService {
     private final UserCourseService userCourseService;
     private final PeriodTemplateService periodTemplateService;
     private final UserCourseRepository userCourseRepository;
+    private final PeriodInstanceService periodInstanceService;
 
     public CourseResponseDto create(CreateCourseDto dto) {
         UUID userId = AuthUtil.getAuthenticatedUserId();
@@ -47,7 +50,9 @@ public class CourseService {
 
         periodTemplateService.createPeriodsForCourse(course);
 
-        userCourseService.createUserCourseLink(user, course);
+        UserCourseModel ownerUserCourse = userCourseService.createUserCourseLink(user, course);
+
+        periodInstanceService.createPeriodInstancesForUserCourse(ownerUserCourse);
 
 
         return CourseMapper.toResponse(course);

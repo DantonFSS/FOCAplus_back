@@ -1,8 +1,12 @@
 package com.focados.foca.modules.periods.domain.services;
 
 import com.focados.foca.modules.courses.database.entity.CourseModel;
+import com.focados.foca.modules.courses.database.entity.UserCourseModel;
 import com.focados.foca.modules.courses.database.repository.CourseRepository;
+import com.focados.foca.modules.courses.database.repository.UserCourseRepository;
+import com.focados.foca.modules.periods.database.entity.PeriodInstanceModel;
 import com.focados.foca.modules.periods.database.entity.PeriodTemplateModel;
+import com.focados.foca.modules.periods.database.repository.PeriodInstanceRepository;
 import com.focados.foca.modules.periods.database.repository.PeriodTemplateRepository;
 import com.focados.foca.modules.courses.database.entity.enums.DivisionType;
 import com.focados.foca.modules.periods.domain.dtos.mappers.PeriodTemplateMapper;
@@ -25,6 +29,8 @@ public class PeriodTemplateService {
 
     private final PeriodTemplateRepository periodTemplateRepository;
     private final CourseRepository courseRepository;
+    private final UserCourseRepository userCourseRepository;
+    private final PeriodInstanceRepository periodInstanceRepository;
 
     private static final Map<DivisionType, String> DIVISION_TYPE_PT = new HashMap<>();
     static {
@@ -77,7 +83,30 @@ public class PeriodTemplateService {
         }
 
         periodTemplateRepository.save(newPeriod);
+
+        createPeriodInstanceForOwner(newPeriod, course);
+
         return PeriodTemplateMapper.toResponse(newPeriod);
+    }
+
+    public void createPeriodInstanceForOwner(PeriodTemplateModel periodTemplate, CourseModel course) {
+        UserCourseModel ownerUserCourse = userCourseRepository.findByUserIdAndCourseTemplateId(
+                course.getCreatedBy().getId(), course.getId()
+        ).orElse(null);
+
+        if (ownerUserCourse == null) {
+            // OWNER ainda não tem UserCourse (acontece no createPeriodsForCourse)
+            return;
+        }
+
+        PeriodInstanceModel ownerInstance = new PeriodInstanceModel();
+        ownerInstance.setUserCourse(ownerUserCourse);
+        ownerInstance.setPeriodTemplate(periodTemplate);
+        ownerInstance.setName(periodTemplate.getName());
+        ownerInstance.setPosition(periodTemplate.getPosition());
+        ownerInstance.setPlannedStart(periodTemplate.getPlannedStart());
+        ownerInstance.setPlannedEnd(periodTemplate.getPlannedEnd());
+        periodInstanceRepository.save(ownerInstance);
     }
 
     public PeriodTemplateModel buildNextPeriod(CourseModel course, List<PeriodTemplateModel> existingPeriods) {
