@@ -2,6 +2,8 @@ package com.focados.foca.modules.studySessions.domain.services;
 
 import com.focados.foca.modules.courses.database.repository.UserCourseRepository;
 import com.focados.foca.modules.disciplines.database.repository.DisciplineInstanceRepository;
+import com.focados.foca.modules.score.database.entity.ScoreRecordModel;
+import com.focados.foca.modules.score.domain.services.ScoreRecordService;
 import com.focados.foca.modules.studySessions.database.entity.StudySessionModel;
 import com.focados.foca.modules.studySessions.database.repository.StudySessionRepository;
 import com.focados.foca.modules.studySessions.domain.dtos.mappers.StudySessionMapper;
@@ -24,6 +26,7 @@ public class StudySessionService {
     private final UserCourseRepository userCourseRepo;
     private final DisciplineInstanceRepository disciplineInstanceRepo;
     private final UserRepository userRepo;
+    private final ScoreRecordService scoreRecordService;
 
     public StudySessionResponseDTO createSession(CreateStudySessionDTO dto) {
         UUID userId = AuthUtil.getAuthenticatedUserId();
@@ -49,6 +52,11 @@ public class StudySessionService {
         }
 
         session = repository.save(session);
+
+        if (dto.getPointsEarned() != null && dto.getPointsEarned() > 0) {
+            scoreRecordService.onStudySessionCompleted(session, userId);
+        }
+
         return StudySessionMapper.toResponse(session);
     }
 
@@ -78,4 +86,5 @@ public class StudySessionService {
         }
         repository.deleteById(id);
     }
+
 }

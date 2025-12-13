@@ -7,6 +7,7 @@ import com.focados.foca.modules.score.database.entity.enums.ScoreSourceType;
 import com.focados.foca.modules.score.database.repository.ScoreRecordRepository;
 import com.focados.foca.modules.score.domain.dtos.mappers.ScoreRecordMapper;
 import com.focados.foca.modules.score.domain.dtos.response.ScoreRecordResponseDTO;
+import com.focados.foca.modules.studySessions.database.entity.StudySessionModel;
 import com.focados.foca.modules.tasks.database.entity.TaskModel;
 import com.focados.foca.modules.users.database.repository.UserRepository;
 import com.focados.foca.modules.users.domain.services.AuthUtil;
@@ -63,5 +64,26 @@ public class ScoreRecordService {
     public List<ScoreRecordResponseDTO> findByUserCourseId(UUID userCourseId) {
         return scoreRecordRepository.findByUserCourseId(userCourseId)
                 .stream().map(scoreRecordMapper::toDTO).toList();
+    }
+
+    public ScoreRecordModel onStudySessionCompleted(StudySessionModel session, UUID userId) {
+        var user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("Usuário não encontrado"));
+        var userCourse = session.getUserCourse();
+
+        var record = new ScoreRecordModel();
+        record.setUser(user);
+        record.setUserCourse(userCourse);
+
+        if (session.getDisciplineInstance() != null) {
+            record.setDisciplineInstance(session.getDisciplineInstance());
+        }
+
+        record.setSourceType(ScoreSourceType.STUDY_SESSION);
+        record.setSourceId(session.getId());
+        record.setPoints(session.getPointsEarned());
+
+        scoreRecordRepository.save(record);
+        return record;
     }
 }
