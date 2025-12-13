@@ -9,6 +9,9 @@ import java.time.LocalDate;
 
 @Data
 public class UpdateDisciplineInstanceDto {
+    private String name;
+    private String notes;
+
     private LocalDate plannedStart;
     private LocalDate plannedEnd;
     private DisciplineStatus status;

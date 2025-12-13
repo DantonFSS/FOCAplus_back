@@ -148,6 +148,24 @@ public class DisciplineInstanceService {
         DisciplineInstanceModel instance = disciplineInstanceRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Disciplina não encontrada"));
 
+        UUID userId = AuthUtil.getAuthenticatedUserId();
+        if (!instance.getUserCourse().getUser().getId().equals(userId)) {
+            throw new UserNotAllowedException();
+        }
+
+        // ✅ NAME e NOTES: Apenas OWNER pode editar (sempre atualiza template, afeta todos)
+        if (dto.getName() != null || dto.getNotes() != null) {
+            if (instance.getUserCourse().getRole() != UserCourseRole.OWNER) {
+                throw new UserNotAllowedException("Apenas o criador pode alterar nome/anotações");
+            }
+
+            DisciplineTemplateModel template = instance.getDisciplineTemplate();
+            if (dto.getName() != null) template.setName(dto.getName());
+            if (dto.getNotes() != null) template.setNotes(dto.getNotes());
+            disciplineTemplateRepository.save(template);
+        }
+
+        // ✅ Campos da instance (qualquer um pode editar)
         if (dto.getPlannedStart() != null) instance.setPlannedStart(dto.getPlannedStart());
         if (dto.getPlannedEnd() != null) instance.setPlannedEnd(dto.getPlannedEnd());
         if (dto.getStatus() != null) instance.setStatus(dto.getStatus());

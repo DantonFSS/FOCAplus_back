@@ -6,6 +6,8 @@ import com.focados.foca.modules.disciplines.domain.dtos.response.DisciplineInsta
 public class DisciplineInstanceMapper {
     public static DisciplineInstanceResponseDto toResponse(DisciplineInstanceModel model) {
         DisciplineInstanceResponseDto dto = new DisciplineInstanceResponseDto();
+        dto.setName(model.getDisciplineTemplate().getName());
+        dto.setNotes(model.getDisciplineTemplate().getNotes());
         dto.setId(model.getId());
         dto.setUserCourseId(model.getUserCourse().getId());
         dto.setDisciplineTemplateId(model.getDisciplineTemplate() != null ? model.getDisciplineTemplate().getId() : null);
