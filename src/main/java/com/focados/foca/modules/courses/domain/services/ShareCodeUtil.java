@@ -3,7 +3,6 @@ package com.focados.foca.modules.courses.domain.services;
 import java.util.function.Predicate;
 
 public class ShareCodeUtil {
-    // Recebe prefixo, nome/título e predicate pra checar se existe
     public static String generateShareCode(String prefix, String base, Predicate<String> codeExists) {
         String codePrefix = (prefix + "-" + extractInitials(base)).toUpperCase();
         String randomSuffix;

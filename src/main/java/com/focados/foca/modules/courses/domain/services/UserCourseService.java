@@ -76,11 +76,9 @@ public class UserCourseService {
             }
         }
 
-        // Atualiza campos do vínculo
         userCourse.setCustomStart(dto.getCustomStart());
         userCourse.setCustomEnd(dto.getCustomEnd());
 
-        // Monta UpdateCourseDto com campos do DTO de update combinada
         UpdateCourseDto updateCourseDto = new UpdateCourseDto();
         updateCourseDto.setId(course.getId());
         updateCourseDto.setName(dto.getName());
@@ -96,7 +94,6 @@ public class UserCourseService {
         updateCourseDto.setPhones(dto.getPhones());
         updateCourseDto.setEmails(dto.getEmails());
 
-        // Chama o service centralizado
         courseTemplateEditorService.updateCourseIfChanged(updateCourseDto, course);
         userCourseRepository.save(userCourse);
 
@@ -114,22 +111,17 @@ public class UserCourseService {
 
         CourseModel course = userCourse.getCourseTemplate();
 
-        // ✅ LÓGICA UNIFICADA
         if (userCourse.getRole() == UserCourseRole.OWNER) {
             long totalUsers = userCourseRepository.countByCourseTemplateId(course.getId());
 
             if (totalUsers > 1) {
-                // Há MEMBERs: Arquiva template para preservar para eles
                 course.setArchived(true);
                 courseRepository.save(course);
-                // Deleta UserCourse do OWNER (instances cascade)
                 userCourseRepository.delete(userCourse);
             } else {
-                // Único usuário: Deleta template completamente (cascade tudo)
                 courseRepository.delete(course);
             }
         } else {
-            // MEMBER: Apenas remove seu vínculo (instances cascade)
             userCourseRepository.delete(userCourse);
         }
     }

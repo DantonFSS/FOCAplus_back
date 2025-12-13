@@ -14,10 +14,5 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class GetCoursesController {
     private final GetCoursesService getCoursesService;
-
-   /* @GetMapping
-    public ResponseEntity<List<CourseResponseDto>> getAll(@RequestHeader("X-User-Id") UUID userId) {
-        return ResponseEntity.ok(getCoursesService.execute(userId));
-    }*/
 }
 

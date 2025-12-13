@@ -16,13 +16,5 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class GetCoursesService {
     private final UserCourseRepository userCourseRepository;
-
-    //public List<CourseResponseDto> execute(UUID userId) {
-        // Busca cursos do usuário
-        //List<UserCourseModel> courses = userCourseRepository.findByUserId(userId);
-
-        // Retorna lista de responses
-        //return CourseMapper.toResponseList(courses);
-   // }
 }
 

@@ -49,12 +49,5 @@ public class CourseMapper {
         response.setCreatedBy(course.getCreatedBy() != null ? course.getCreatedBy().getId() : null);
         return response;
     }
-
-
-    /*public static List<CourseResponseDto> toResponseList(List<UserCourseModel> userCourses) {
-        return userCourses.stream()
-                .map(CourseMapper::toResponse)
-                .collect(Collectors.toList());
-    }*/
 }
 

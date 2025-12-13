@@ -99,9 +99,6 @@ public class DisciplineTemplateService {
         DisciplineTemplateModel template = disciplineTemplateRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Disciplina não encontrada"));
 
-        long instanceCount = disciplineInstanceRepository.countByDisciplineTemplateId(id);
-        System.out.println("[ADMIN] Deletando template " + id + " e " + instanceCount + " instances");
-
         disciplineTemplateRepository.deleteById(id);
     }
 }

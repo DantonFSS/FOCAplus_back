@@ -21,12 +21,10 @@ public class FriendshipService {
     private final FriendshipRepository friendshipRepo;
     private final UserRepository userRepo;
 
-    // Solicitar amizade
     public void requestFriendship(UUID friendUserId) {
         UUID userId = AuthUtil.getAuthenticatedUserId();
         if (userId.equals(friendUserId)) throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Não pode ser amigo de si mesmo");
 
-        // Checa se já existe amizade ou solicitação em qualquer direção
         boolean exists = friendshipRepo.findByUserIdAndFriendIdOrFriendIdAndUserId(userId, friendUserId, userId, friendUserId).isPresent();
         if (exists) throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Já existe amizade ou solicitação");
 
@@ -40,7 +38,6 @@ public class FriendshipService {
         friendshipRepo.save(f);
     }
 
-    // Aceitar
     public void acceptFriendship(UUID friendshipId) {
         UUID userId = AuthUtil.getAuthenticatedUserId();
         var f = friendshipRepo.findById(friendshipId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Solicitação não encontrada"));
@@ -50,11 +47,9 @@ public class FriendshipService {
         friendshipRepo.save(f);
     }
 
-    // Recusar ou remover amizade
     public void rejectOrRemoveFriendship(UUID friendshipId) {
         UUID userId = AuthUtil.getAuthenticatedUserId();
         var f = friendshipRepo.findById(friendshipId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Solicitação não encontrada"));
-        // Pode remover se é solicitante ou receptor OU se status já accepted (unfriend)
         if (!f.getUser().getId().equals(userId) && !f.getFriend().getId().equals(userId))
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Sem permissão");
         friendshipRepo.delete(f);

@@ -8,9 +8,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-/**
- * Repositório do módulo Courses
- */
 @Repository
 public interface CourseRepository extends JpaRepository<CourseModel, UUID> {
     List<CourseModel> findByCreatedById(UUID userId);

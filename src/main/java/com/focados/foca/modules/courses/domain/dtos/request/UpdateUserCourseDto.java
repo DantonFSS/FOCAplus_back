@@ -13,11 +13,9 @@ import java.util.UUID;
 @Data
 public class UpdateUserCourseDto {
     
-    // Campos do vínculo que podem ser editados
     private LocalDate customStart;
     private LocalDate customEnd;
 
-    // Campos do template que podem ser editados
     private String name;
     private CourseLevel level;
     private DivisionType divisionType;

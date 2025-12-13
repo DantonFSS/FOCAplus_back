@@ -13,7 +13,6 @@ import java.util.UUID;
 
 @Data
 public class UserCourseResponseDto {
-    // Campos do UserCourseModel
     private UUID userCourseId;
     private UserCourseRole role;
     private boolean accepted;
@@ -21,7 +20,6 @@ public class UserCourseResponseDto {
     private LocalDate customStart;
     private LocalDate customEnd;
 
-    // Campos do CourseModel
     private UUID templateId;
     private String name;
     private CourseLevel level;

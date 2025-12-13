@@ -25,7 +25,6 @@ public class PeriodInstanceMapper {
         template.setPlannedEnd(instance.getPlannedEnd());
         template.setName(instance.getName());
         template.setPosition(instance.getPosition());
-        // Preencher outros campos se necessário
         return template;
     }
 }

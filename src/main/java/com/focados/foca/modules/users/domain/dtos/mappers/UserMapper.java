@@ -31,7 +31,6 @@ public class UserMapper {
         response.setUsername(user.getUsername());
         response.setEmail(user.getEmail());
         response.setPhone(user.getPhone());
-        //user.getId() and user.getUserRegisterDate() were intentionally omitted
         return response;
     }
 

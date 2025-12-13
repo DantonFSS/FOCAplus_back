@@ -2,14 +2,12 @@ package com.focados.foca.shared.common.utils.exceptions.httpex;
 
 import com.focados.foca.shared.common.utils.exceptions.*;
 import jakarta.servlet.http.HttpServletRequest;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-@Slf4j
 @RestControllerAdvice
 public class ErrorHandler {
 
@@ -18,8 +16,6 @@ public class ErrorHandler {
             EmailAlreadyUsedException ex,
             HttpServletRequest request
     ) {
-        log.error("Email already used - {}", ex.getMessage());
-
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
                 .contentType(MediaType.APPLICATION_JSON)
@@ -34,8 +30,6 @@ public class ErrorHandler {
     public ResponseEntity<ApplicationError> cpfAlreadyExistsException(
             RuntimeException ex,
             HttpServletRequest request) {
-
-        log.error("CPF already exists - ", ex);
 
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)

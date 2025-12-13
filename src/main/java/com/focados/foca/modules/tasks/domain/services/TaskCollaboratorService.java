@@ -56,18 +56,4 @@ public class TaskCollaboratorService {
         }
         collaboratorRepository.deleteByTaskIdAndUserId(taskId, userId);
     }
-
-/*
-    public void joinTaskByShareCode(String shareCode, UUID userId) {
-        var task = taskRepository.findByShareCode(shareCode)
-                .orElseThrow(() -> new IllegalArgumentException("Tarefa não encontrada"));
-        var user = userRepository.findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException("Usuário não encontrado"));
-
-        var collab = new TaskCollaboratorModel();
-        collab.setTask(task);
-        collab.setUser(user);
-        collab.setRole("member");
-        collaboratorRepository.save(collab);
-    }*/
 }

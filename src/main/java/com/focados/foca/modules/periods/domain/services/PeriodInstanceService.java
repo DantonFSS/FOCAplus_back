@@ -55,7 +55,6 @@ public class PeriodInstanceService {
         List<PeriodInstanceModel> existingPeriods = periodInstanceRepository
                 .findByUserCourseIdOrderByPositionAsc(dto.getUserCourseId());
 
-        // Use a mesma lógica do template para calcular o próximo período (mas adaptando para salvar como instance)
         PeriodTemplateModel auxPeriodTemplate = periodTemplateService.buildNextPeriod(
                 userCourse.getCourseTemplate(),
                 existingPeriods.stream().map(PeriodInstanceMapper::toTemplateAux).toList()
@@ -67,7 +66,7 @@ public class PeriodInstanceService {
 
         PeriodInstanceModel periodInstance = new PeriodInstanceModel();
         periodInstance.setUserCourse(userCourse);
-        periodInstance.setPeriodTemplate(null); // opcional: pode linkar a um template real ou null se não houver
+        periodInstance.setPeriodTemplate(null);
         periodInstance.setName(auxPeriodTemplate.getName());
         periodInstance.setPosition(existingPeriods.size() + 1);
         periodInstance.setPlannedStart(auxPeriodTemplate.getPlannedStart());
@@ -114,32 +113,26 @@ public class PeriodInstanceService {
         PeriodInstanceModel instance = periodInstanceRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Período não encontrado"));
 
-        // Verifica ownership
         UUID userId = AuthUtil.getAuthenticatedUserId();
         if (!instance.getUserCourse().getUser().getId().equals(userId)) {
             throw new UserNotAllowedException();
         }
 
-        // ✅ Detecta se é OWNER
         UserCourseModel userCourse = instance.getUserCourse();
         PeriodTemplateModel template = instance.getPeriodTemplate();
 
         if (template != null && userCourse.getRole() == UserCourseRole.OWNER) {
-            // OWNER: Verifica se pode arquivar/deletar template
             long instanceCount = periodInstanceRepository.countByPeriodTemplateId(template.getId());
 
             if (instanceCount > 1) {
-                // Outras pessoas têm: ARQUIVA template
                 template.setArchived(true);
                 periodTemplateRepository.save(template);
             } else {
-                // Única instance: DELETA template
                 periodTemplateRepository.delete(template);
-                return; // Instance será deletada por cascade
+                return;
             }
         }
 
-        // MEMBER ou OWNER (com template arquivado) ou instance sem template: Deleta instance
         periodInstanceRepository.deleteById(id);
     }
 }

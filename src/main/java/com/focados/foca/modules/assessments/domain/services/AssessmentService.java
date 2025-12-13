@@ -27,7 +27,6 @@ public class AssessmentService {
     private final AssessmentCollaboratorRepository collabRepository;
     private final DisciplineInstanceRepository disciplineInstanceRepository;
 
-    // Map para transformar nota conceitual em ints
     private static final Map<String, Integer> LETTER_GRADES =
             Map.of("A", 5, "B", 4, "C", 3, "D", 2, "E", 1, "F", 0);
 
@@ -63,20 +62,17 @@ public class AssessmentService {
                 .map(AssessmentMapper::toResponse).toList();
     }
 
-    // GET by discipline instance
     public List<AssessmentResponseDTO> getByDisciplineInstance(UUID disciplineInstanceId) {
         return assessmentRepository.findByDisciplineInstanceId(disciplineInstanceId).stream()
                 .map(AssessmentMapper::toResponse).toList();
     }
 
-    // GET one
     public AssessmentResponseDTO getOne(UUID id) {
         return assessmentRepository.findById(id)
                 .map(AssessmentMapper::toResponse)
                 .orElseThrow(() -> new IllegalArgumentException("Assessment não encontrada"));
     }
 
-    // PUT (edit)
     @Transactional
     public AssessmentResponseDTO updateAssessment(UUID id, UpdateAssessmentDTO dto) {
         var assessment = assessmentRepository.findById(id)
@@ -94,13 +90,11 @@ public class AssessmentService {
             Integer gradeValue;
 
             if (gradeSystem == GradeSystem.LETTER) {
-                // Aceita apenas letras de A a F
                 Map<String, Integer> LETTER_GRADES = Map.of("A", 5, "B", 4, "C", 3, "D", 2, "E", 1, "F", 0);
                 gradeValue = LETTER_GRADES.getOrDefault(dto.getGrade().toUpperCase(), null);
                 if (gradeValue == null)
                     throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Nota conceitual inválida (A-F)");
             } else {
-                // Aceita apenas inteiros
                 try {
                     gradeValue = Integer.valueOf(dto.getGrade());
                 } catch (NumberFormatException e) {
@@ -123,7 +117,6 @@ public class AssessmentService {
         return AssessmentMapper.toResponse(assessment);
     }
 
-    // DELETE
     @Transactional
     public void deleteAssessment(UUID id) {
         if (!assessmentRepository.existsById(id)) {

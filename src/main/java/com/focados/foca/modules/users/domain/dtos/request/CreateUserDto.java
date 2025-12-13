@@ -12,8 +12,6 @@ import java.time.LocalDateTime;
 @Component
 @Data
 public class CreateUserDto {
-    // CPF é opcional - não é obrigatório para cadastro
-    //@Pattern(regexp = "^\\d{11}$", message = "0 CPF deve conter exatamente 11 digitos numéricos")
     private String cpf;
 
     @NotNull

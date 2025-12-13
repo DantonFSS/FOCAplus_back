@@ -16,21 +16,18 @@ import java.util.UUID;
 public class FriendshipController {
     private final FriendshipService service;
 
-    // Solicitar amizade
     @PostMapping
     public ResponseEntity<Void> request(@RequestBody FriendshipRequestDTO dto) {
         service.requestFriendship(dto.getFriendUserId());
         return ResponseEntity.noContent().build();
     }
 
-    // Aceitar amizade
     @PutMapping("/accept/{friendshipId}")
     public ResponseEntity<Void> accept(@PathVariable UUID friendshipId) {
         service.acceptFriendship(friendshipId);
         return ResponseEntity.noContent().build();
     }
 
-    // Remover/rejeitar amizade
     @DeleteMapping("/{friendshipId}")
     public ResponseEntity<Void> remove(@PathVariable UUID friendshipId) {
         service.rejectOrRemoveFriendship(friendshipId);

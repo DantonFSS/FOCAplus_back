@@ -164,8 +164,6 @@ public class CourseService {
             throw new UserNotAllowedException();
         }
 
-        // (cascade vai deletar UserCourses, Periods, Disciplines, etc.)
-        System.out.println("[ADMIN] Deletando course template " + id + " fisicamente");
         courseRepository.delete(course);
     }
 
@@ -229,11 +227,10 @@ public class CourseService {
     }
 
     public String generateShareCode(String name) {
-        // Extrai sigla usando apenas as iniciais das palavras, ou primeiros 3 chars como fallback
         String prefix = name.replaceAll("[^A-Za-z]", " ")
-                .replaceAll("\\s+", " ") // transforma para palavras separadas
+                .replaceAll("\\s+", " ")
                 .trim()
-                .replaceAll("([A-Za-z])[A-Za-z]* ?", "$1") // pega só iniciais
+                .replaceAll("([A-Za-z])[A-Za-z]* ?", "$1")
                 .toUpperCase();
         if (prefix.isEmpty()) {
             prefix = name.substring(0, Math.min(3, name.length())).toUpperCase();

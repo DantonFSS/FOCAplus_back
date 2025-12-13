@@ -69,7 +69,6 @@ public class SelfEvalAnswerService {
         var answer = answerRepo.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Resposta não encontrada"));
 
-        // Permita atualizar score e/ou relink question/session (se precisar no futuro)
         if (dto.getScore() != null) {
             if (dto.getScore() < 1 || dto.getScore() > 10)
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Score deve estar entre 1 e 10");

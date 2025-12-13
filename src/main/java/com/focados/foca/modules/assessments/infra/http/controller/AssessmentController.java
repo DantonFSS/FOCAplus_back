@@ -30,13 +30,11 @@ public class AssessmentController {
         return ResponseEntity.ok(assessmentService.getAllAssessments());
     }
 
-    // GET by discipline instance
     @GetMapping("/by-discipline/{disciplineInstanceId}")
     public ResponseEntity<List<AssessmentResponseDTO>> getByDiscipline(@PathVariable UUID disciplineInstanceId) {
         return ResponseEntity.ok(assessmentService.getByDisciplineInstance(disciplineInstanceId));
     }
 
-    // GET one
     @GetMapping("/{id}")
     public ResponseEntity<AssessmentResponseDTO> getOne(@PathVariable UUID id) {
         return ResponseEntity.ok(assessmentService.getOne(id));

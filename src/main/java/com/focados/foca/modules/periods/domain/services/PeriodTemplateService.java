@@ -99,7 +99,6 @@ public class PeriodTemplateService {
         ).orElse(null);
 
         if (ownerUserCourse == null) {
-            // OWNER ainda não tem UserCourse (acontece no createPeriodsForCourse)
             return;
         }
 
@@ -125,7 +124,6 @@ public class PeriodTemplateService {
         NextPeriodData dates = getNextPeriodDates(course.getDivisionType(), lastEnd, courseEnd, nextPosition);
 
         if (dates.start.isAfter(courseEnd)) {
-            System.out.println("[buildNextPeriod] Início calculado após término do curso. Não criar mais períodos.");
             return null;
         }
 
@@ -135,11 +133,6 @@ public class PeriodTemplateService {
         period.setPosition(nextPosition);
         period.setPlannedStart(dates.start);
         period.setPlannedEnd(dates.end);
-
-        System.out.println("[buildNextPeriod] NOVO PERÍODO: position=" + period.getPosition()
-                + " start=" + period.getPlannedStart()
-                + " end=" + period.getPlannedEnd()
-                + " name=" + period.getName());
 
         return period;
     }
@@ -154,7 +147,6 @@ public class PeriodTemplateService {
         int year;
 
         if (type == DivisionType.SEMESTER) {
-            // SEMESTER: Março–Julho, Julho–Dezembro
             if (previousPeriodEnd.getMonthValue() == 12) {
                 year = previousPeriodEnd.getYear() + 1;
                 start = LocalDate.of(year, 3, 1);
@@ -169,14 +161,12 @@ public class PeriodTemplateService {
                 end = LocalDate.of(year, 7, 15);
             }
         } else if (type == DivisionType.QUARTER) {
-            // QUARTER: Trimestres começando após periodEnd
             start = previousPeriodEnd.plusDays(1);
             end = start.plusMonths(3).minusDays(1);
         } else if (type == DivisionType.YEAR) {
             start = previousPeriodEnd.plusDays(1);
             end = start.plusYears(1).minusDays(1);
         } else {
-            // Default: PERIOD/MODULE = 6 meses
             start = previousPeriodEnd.plusDays(1);
             end = start.plusMonths(6).minusDays(1);
         }
@@ -187,7 +177,6 @@ public class PeriodTemplateService {
         return new NextPeriodData(start, end);
     }
 
-    // Helper class para retorno dos dados
     private static class NextPeriodData {
         final LocalDate start;
         final LocalDate end;
@@ -233,11 +222,6 @@ public class PeriodTemplateService {
         PeriodTemplateModel template = periodTemplateRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Período não encontrado"));
 
-        // Aviso de operação destrutiva
-        long instanceCount = periodInstanceRepository.countByPeriodTemplateId(id);
-        System.out.println("[ADMIN] Deletando template " + id + " e " + instanceCount + " instances");
-
-        // Deleta template (instances serão deletadas por cascade se configurado)
         periodTemplateRepository.deleteById(id);
     }
 }

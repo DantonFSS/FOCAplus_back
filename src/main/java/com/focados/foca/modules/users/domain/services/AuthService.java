@@ -41,17 +41,14 @@ public class AuthService {
     private Long refreshTokenExpiration;
 
     public AuthResponseDto register(CreateUserDto createUserDto) {
-        // Verifica se email já existe
         if (userRepository.findByEmail(createUserDto.getEmail()).isPresent()) {
             throw new EmailAlreadyUsedException(createUserDto.getEmail());
         }
 
-        // Verifica se username já existe
         if (userRepository.findByUsername(createUserDto.getUsername()).isPresent()) {
             throw new UsernameAlreadyExistsException(createUserDto.getUsername());
         }
 
-        // Verifica se CPF já existe
         if (createUserDto.getCpf() != null && !createUserDto.getCpf().isBlank()) {
             if (userRepository.findByCpf(createUserDto.getCpf()).isPresent()) {
                 throw new CpfAlreadyExistsException();
@@ -59,44 +56,33 @@ public class AuthService {
             }
         }
 
-        // Mapeia DTO para entidade
         UserModel user = UserMapper.mappingToUserEntity(createUserDto);
 
-        // Criptografa senha com BCrypt
         user.setPasswordHash(passwordEncoder.encode(createUserDto.getPassword()));
 
-        // Salva usuário
         UserModel savedUser = userRepository.save(user);
 
-        // Gera JWT
         String accessToken = generateAccessToken(savedUser);
 
-        // Gera Refresh Token
         String refreshToken = generateRefreshToken(savedUser);
 
-        // Salva Refresh Token no banco
         saveRefreshToken(savedUser, refreshToken);
 
         return new AuthResponseDto(accessToken, refreshToken);
     }
 
     public AuthResponseDto login(LoginDto loginDto) {
-        // Busca usuário por email
         UserModel user = userRepository.findByEmail(loginDto.getEmail())
                 .orElseThrow(InvalidCredentialsException::new);
 
-        // Valida senha com BCrypt
         if (!passwordEncoder.matches(loginDto.getPassword(), user.getPasswordHash())) {
             throw new InvalidCredentialsException();
         }
 
-        // Gera JWT
         String accessToken = generateAccessToken(user);
 
-        // Gera Refresh Token
         String refreshToken = generateRefreshToken(user);
 
-        // Salva Refresh Token no banco
         saveRefreshToken(user, refreshToken);
 
         return new AuthResponseDto(accessToken, refreshToken);
@@ -122,20 +108,16 @@ public class AuthService {
     @Transactional
     private void saveRefreshToken(UserModel user, String refreshToken) {
 
-        // Remove TODOS os tokens do usuário antes de criar novo
         refreshTokenRepository.deleteByUserId(user.getId());
 
-        // Hash do refresh token antes de salvar
         String tokenHash = passwordEncoder.encode(refreshToken);
 
-        // Revoga tokens antigos do usuário
         refreshTokenRepository.findByUserId(user.getId())
                 .ifPresent(oldToken -> {
                     oldToken.setRevoked(true);
                     refreshTokenRepository.save(oldToken);
                 });
 
-        // Cria novo refresh token
         RefreshTokenModel refreshTokenModel = new RefreshTokenModel();
         refreshTokenModel.setUser(user);
         refreshTokenModel.setTokenHash(tokenHash);
@@ -146,7 +128,6 @@ public class AuthService {
     }
 
     public AuthResponseDto refreshToken(RefreshTokenDto refreshTokenDto) {
-        // Busca todos os refresh tokens ativos e verifica se algum corresponde
         RefreshTokenModel refreshTokenModel = refreshTokenRepository.findAll()
                 .stream()
                 .filter(token -> !token.getRevoked() && 
@@ -159,17 +140,13 @@ public class AuthService {
 
         UserModel user = refreshTokenModel.getUser();
 
-        // Revoga o token antigo
         refreshTokenModel.setRevoked(true);
         refreshTokenRepository.save(refreshTokenModel);
 
-        // Gera novo access token
         String newAccessToken = generateAccessToken(user);
 
-        // Gera novo refresh token
         String newRefreshToken = generateRefreshToken(user);
 
-        // Salva novo refresh token
         saveRefreshToken(user, newRefreshToken);
 
         return new AuthResponseDto(newAccessToken, newRefreshToken);

@@ -24,7 +24,7 @@ public class DisciplineScheduleModel {
     private DisciplineInstanceModel disciplineInstance;
 
     @Column(nullable = false)
-    private int weekday; // 0 = domingo, 6 = sábado
+    private int weekday;
 
     @Column(nullable = false)
     private LocalTime startTime;

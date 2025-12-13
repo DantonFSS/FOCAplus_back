@@ -15,7 +15,6 @@ public interface DisciplineInstanceRepository extends JpaRepository<DisciplineIn
     long countByDisciplineTemplateId(UUID disciplineTemplateId);
     Optional<DisciplineInstanceModel> findByUserCourseIdAndDisciplineTemplateId(UUID userCourseId, UUID disciplineTemplateId);
 
-    // ✅ Filtra instances cujo template NÃO está arquivado
     @Query("SELECT di FROM DisciplineInstanceModel di " +
             "WHERE di.periodInstance.id = :periodInstanceId " +
             "AND (di.disciplineTemplate.archived = false OR di.disciplineTemplate.archived IS NULL)")

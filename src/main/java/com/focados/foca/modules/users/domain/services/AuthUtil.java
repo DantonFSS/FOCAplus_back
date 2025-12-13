@@ -15,7 +15,6 @@ public class AuthUtil {
             throw new UserNotAuthenticatedException();
         }
 
-        // Assumindo que o token JWT tem o sub = userId (UUID)
         String userIdStr = authentication.getName();
         return UUID.fromString(userIdStr);
     }

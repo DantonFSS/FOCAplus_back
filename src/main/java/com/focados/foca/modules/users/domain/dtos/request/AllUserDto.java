@@ -13,8 +13,6 @@ import java.time.LocalDateTime;
 @Component
 @Data
 public class AllUserDto {
-    // CPF é opcional - não é obrigatório
-    //@Pattern(regexp = "^\\d{11}$", message = "0 CPF deve conter exatamente 11 digitos numéricos")
     private String cpf;
 
     @NotNull

@@ -66,19 +66,16 @@ public class DisciplineInstanceService {
         PeriodTemplateModel periodTemplate = template.getPeriodTemplate();
         CourseModel course = periodTemplate.getCourseTemplate();
 
-        // Busca o owner do curso
         UserCourseModel ownerUserCourse = userCourseRepository.findByUserIdAndCourseTemplateId(
                 course.getCreatedBy().getId(), course.getId()
         ).orElseThrow(() -> new IllegalStateException("Owner UserCourse não encontrado"));
 
-        // Busca o period instance do owner (nesse período)
         PeriodInstanceModel ownerPeriodInstance = periodInstanceRepository.findByUserCourseIdAndPeriodTemplateId(
                 ownerUserCourse.getId(), periodTemplate.getId()
         ).orElseThrow(() -> new IllegalStateException(
                 "Period instance não encontrado para OWNER. Período template ID: " + periodTemplate.getId()
         ));
 
-        // Criar a instance
         DisciplineInstanceModel instance = new DisciplineInstanceModel();
         instance.setUserCourse(ownerUserCourse);
         instance.setPeriodInstance(ownerPeriodInstance);
@@ -153,7 +150,6 @@ public class DisciplineInstanceService {
             throw new UserNotAllowedException();
         }
 
-        // ✅ NAME e NOTES: Apenas OWNER pode editar (sempre atualiza template, afeta todos)
         if (dto.getName() != null || dto.getNotes() != null) {
             if (instance.getUserCourse().getRole() != UserCourseRole.OWNER) {
                 throw new UserNotAllowedException("Apenas o criador pode alterar nome/anotações");
@@ -165,7 +161,6 @@ public class DisciplineInstanceService {
             disciplineTemplateRepository.save(template);
         }
 
-        // ✅ Campos da instance (qualquer um pode editar)
         if (dto.getPlannedStart() != null) instance.setPlannedStart(dto.getPlannedStart());
         if (dto.getPlannedEnd() != null) instance.setPlannedEnd(dto.getPlannedEnd());
         if (dto.getStatus() != null) instance.setStatus(dto.getStatus());
@@ -181,32 +176,26 @@ public class DisciplineInstanceService {
         DisciplineInstanceModel instance = disciplineInstanceRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Disciplina não encontrada"));
 
-        // Verifica ownership
         UUID userId = AuthUtil.getAuthenticatedUserId();
         if (!instance.getUserCourse().getUser().getId().equals(userId)) {
             throw new UserNotAllowedException();
         }
 
-        // ✅ Detecta se é OWNER
         UserCourseModel userCourse = instance.getUserCourse();
         DisciplineTemplateModel template = instance.getDisciplineTemplate();
 
         if (userCourse.getRole() == UserCourseRole.OWNER) {
-            // ✅ OWNER: Verifica se pode arquivar/deletar template
             long instanceCount = disciplineInstanceRepository.countByDisciplineTemplateId(template.getId());
 
             if (instanceCount > 1) {
-                // Outras pessoas têm: ARQUIVA template
                 template.setArchived(true);
                 disciplineTemplateRepository.save(template);
             } else {
-                // Única instance: DELETA template
                 disciplineTemplateRepository.delete(template);
-                return; // Instance será deletada por cascade
+                return;
             }
         }
 
-        // MEMBER ou OWNER (com template arquivado): Deleta apenas instance
         disciplineInstanceRepository.deleteById(id);
     }
 }

@@ -16,7 +16,6 @@ public interface UserCourseRepository extends JpaRepository<UserCourseModel, UUI
     boolean existsByUserIdAndCourseTemplateId(UUID userId, UUID courseTemplateId);
     Optional<UserCourseModel> findByUserIdAndCourseTemplateId(UUID userId, UUID courseTemplateId);
     long countByCourseTemplateId(UUID courseTemplateId);
-    // Adicionar query custom
     @Query("SELECT uc FROM UserCourseModel uc WHERE uc.user.id = :userId AND uc.courseTemplate.archived = false")
     List<UserCourseModel> findByUserIdWithNonArchivedCourses(@Param("userId") UUID userId);
 }

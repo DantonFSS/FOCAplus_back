@@ -10,9 +10,6 @@ import lombok.*;
 import java.time.ZonedDateTime;
 import java.util.UUID;
 
-/**
- * Entidade do módulo StudySessions
- */
 @Entity
 @Table(name = "study_sessions")
 @Getter @Setter

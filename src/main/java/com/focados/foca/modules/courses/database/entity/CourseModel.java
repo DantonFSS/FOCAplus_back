@@ -16,9 +16,6 @@ import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.UUID;
 
-/**
- * Entidade do módulo Courses
- */
 @Entity
 @Table(name = "course_templates")
 @Data
