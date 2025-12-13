@@ -12,6 +12,7 @@ public class PeriodTemplateMapper {
         dto.setPosition(model.getPosition());
         dto.setPlannedStart(model.getPlannedStart());
         dto.setPlannedEnd(model.getPlannedEnd());
+        dto.setArchived(model.isArchived());
         return dto;
     }
 }

@@ -23,11 +23,9 @@ public class UpdateCourseDto {
     private String name;
 
     @NotNull
-    @NotBlank(message = "Level must not be empty or null")
     private CourseLevel level;
 
     @NotNull
-    @NotBlank(message = "Division type must not be empty or null")
     private DivisionType divisionType = DivisionType.PERIOD;
 
     @NotNull(message = "DivisionsCount is required")

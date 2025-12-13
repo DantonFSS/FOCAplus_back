@@ -1,8 +1,7 @@
 package com.focados.foca.modules.tasks.domain.services;
 
 import com.focados.foca.modules.courses.database.entity.enums.UserCourseRole;
-import com.focados.foca.modules.courses.domain.services.ShareCodeUtil;
-import com.focados.foca.modules.materias.database.repository.DisciplineInstanceRepository;
+import com.focados.foca.modules.disciplines.database.repository.DisciplineInstanceRepository;
 import com.focados.foca.modules.score.database.entity.ScoreRecordModel;
 import com.focados.foca.modules.score.domain.dtos.mappers.ScoreRecordMapper;
 import com.focados.foca.modules.score.domain.services.ScoreRecordService;
@@ -15,7 +14,6 @@ import com.focados.foca.modules.tasks.domain.dtos.request.CompleteTaskDTO;
 import com.focados.foca.modules.tasks.domain.dtos.request.CreateTaskDTO;
 import com.focados.foca.modules.tasks.domain.dtos.request.UpdateTaskDTO;
 import com.focados.foca.modules.tasks.domain.dtos.response.CompleteTaskResponseDTO;
-import com.focados.foca.modules.tasks.domain.dtos.response.TaskCollaboratorResponseDTO;
 import com.focados.foca.modules.tasks.domain.dtos.response.TaskResponseDTO;
 import com.focados.foca.modules.users.database.repository.UserRepository;
 import com.focados.foca.modules.users.domain.services.AuthUtil;

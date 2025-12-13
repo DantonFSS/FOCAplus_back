@@ -7,6 +7,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import java.time.LocalDate;
 import java.time.ZonedDateTime;
@@ -29,6 +31,7 @@ public class UserCourseModel {
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "course_template_id", nullable = false)
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private CourseModel courseTemplate;
 
     @Enumerated(EnumType.STRING)

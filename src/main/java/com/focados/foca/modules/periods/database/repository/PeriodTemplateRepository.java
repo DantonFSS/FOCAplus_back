@@ -10,4 +10,5 @@ import java.util.UUID;
 @Repository
 public interface PeriodTemplateRepository extends JpaRepository<PeriodTemplateModel, UUID> {
     List<PeriodTemplateModel> findByCourseTemplateIdOrderByPositionAsc(UUID courseTemplateId);
+    List<PeriodTemplateModel> findByCourseTemplateIdAndArchivedFalseOrderByPositionAsc(UUID courseTemplateId);
 }

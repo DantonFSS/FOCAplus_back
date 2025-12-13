@@ -3,6 +3,7 @@ package com.focados.foca.modules.courses.database.entity;
 import com.focados.foca.modules.courses.database.entity.enums.CourseLevel;
 import com.focados.foca.modules.courses.database.entity.enums.CourseStatus;
 import com.focados.foca.modules.courses.database.entity.enums.DivisionType;
+import com.focados.foca.modules.periods.database.entity.PeriodTemplateModel;
 import com.focados.foca.modules.users.database.entity.UserModel;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -80,7 +81,14 @@ public class CourseModel {
     @Column(name = "share_code", unique = true, nullable = false)
     private String shareCode;
 
-    @OneToMany(mappedBy = "courseTemplate", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Column(name = "archived", nullable = false)
+    private boolean archived = false;
+
+    @OneToMany(mappedBy = "courseTemplate", cascade = CascadeType.REMOVE, orphanRemoval = true)
     private List<UserCourseModel> userCourses;
+
+    @OneToMany(mappedBy = "courseTemplate", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<PeriodTemplateModel> periodTemplates;
+
 }
 

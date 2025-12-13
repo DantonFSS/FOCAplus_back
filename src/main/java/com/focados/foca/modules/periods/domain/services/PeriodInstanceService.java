@@ -1,7 +1,8 @@
 package com.focados.foca.modules.periods.domain.services;
 
+import com.focados.foca.modules.courses.database.entity.enums.UserCourseRole;
 import com.focados.foca.modules.courses.database.repository.UserCourseRepository;
-import com.focados.foca.modules.materias.domain.services.DisciplineInstanceService;
+import com.focados.foca.modules.disciplines.domain.services.DisciplineInstanceService;
 import com.focados.foca.modules.periods.database.entity.PeriodInstanceModel;
 import com.focados.foca.modules.periods.database.entity.PeriodTemplateModel;
 import com.focados.foca.modules.periods.database.repository.PeriodInstanceRepository;
@@ -11,6 +12,8 @@ import com.focados.foca.modules.periods.domain.dtos.mappers.PeriodInstanceMapper
 import com.focados.foca.modules.periods.domain.dtos.request.CreatePeriodInstanceDto;
 import com.focados.foca.modules.periods.domain.dtos.request.UpdatePeriodInstanceDto;
 import com.focados.foca.modules.periods.domain.dtos.response.PeriodInstanceResponseDto;
+import com.focados.foca.modules.users.domain.services.AuthUtil;
+import com.focados.foca.shared.common.utils.exceptions.UserNotAllowedException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -82,7 +85,8 @@ public class PeriodInstanceService {
     }
 
     public List<PeriodInstanceResponseDto> getAllByUserCourseId(UUID userCourseId) {
-        return periodInstanceRepository.findByUserCourseIdOrderByPositionAsc(userCourseId)
+        return periodInstanceRepository
+                .findByUserCourseIdWithNonArchivedTemplates(userCourseId)
                 .stream()
                 .map(PeriodInstanceMapper::toResponse)
                 .toList();
@@ -107,9 +111,35 @@ public class PeriodInstanceService {
     }
 
     public void deleteById(UUID id) {
-        if (!periodInstanceRepository.existsById(id)) {
-            throw new IllegalArgumentException("Período não encontrado");
+        PeriodInstanceModel instance = periodInstanceRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Período não encontrado"));
+
+        // Verifica ownership
+        UUID userId = AuthUtil.getAuthenticatedUserId();
+        if (!instance.getUserCourse().getUser().getId().equals(userId)) {
+            throw new UserNotAllowedException();
         }
+
+        // ✅ Detecta se é OWNER
+        UserCourseModel userCourse = instance.getUserCourse();
+        PeriodTemplateModel template = instance.getPeriodTemplate();
+
+        if (template != null && userCourse.getRole() == UserCourseRole.OWNER) {
+            // OWNER: Verifica se pode arquivar/deletar template
+            long instanceCount = periodInstanceRepository.countByPeriodTemplateId(template.getId());
+
+            if (instanceCount > 1) {
+                // Outras pessoas têm: ARQUIVA template
+                template.setArchived(true);
+                periodTemplateRepository.save(template);
+            } else {
+                // Única instance: DELETA template
+                periodTemplateRepository.delete(template);
+                return; // Instance será deletada por cascade
+            }
+        }
+
+        // MEMBER ou OWNER (com template arquivado) ou instance sem template: Deleta instance
         periodInstanceRepository.deleteById(id);
     }
 }

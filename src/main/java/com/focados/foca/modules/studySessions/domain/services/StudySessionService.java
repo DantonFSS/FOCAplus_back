@@ -1,7 +1,7 @@
 package com.focados.foca.modules.studySessions.domain.services;
 
 import com.focados.foca.modules.courses.database.repository.UserCourseRepository;
-import com.focados.foca.modules.materias.database.repository.DisciplineInstanceRepository;
+import com.focados.foca.modules.disciplines.database.repository.DisciplineInstanceRepository;
 import com.focados.foca.modules.studySessions.database.entity.StudySessionModel;
 import com.focados.foca.modules.studySessions.database.repository.StudySessionRepository;
 import com.focados.foca.modules.studySessions.domain.dtos.mappers.StudySessionMapper;

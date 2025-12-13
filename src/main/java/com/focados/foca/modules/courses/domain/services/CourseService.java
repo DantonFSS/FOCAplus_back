@@ -1,11 +1,15 @@
 package com.focados.foca.modules.courses.domain.services;
 
 import com.focados.foca.modules.courses.database.entity.CourseModel;
+import com.focados.foca.modules.courses.database.entity.UserCourseModel;
 import com.focados.foca.modules.courses.database.repository.CourseRepository;
+import com.focados.foca.modules.courses.database.repository.UserCourseRepository;
 import com.focados.foca.modules.courses.domain.dtos.mappers.CourseMapper;
 import com.focados.foca.modules.courses.domain.dtos.request.CreateCourseDto;
 import com.focados.foca.modules.courses.domain.dtos.request.UpdateCourseDto;
+import com.focados.foca.modules.courses.domain.dtos.request.UpdateCourseInfoDto;
 import com.focados.foca.modules.courses.domain.dtos.response.CourseResponseDto;
+import com.focados.foca.modules.periods.domain.services.PeriodInstanceService;
 import com.focados.foca.modules.periods.domain.services.PeriodTemplateService;
 import com.focados.foca.modules.users.database.entity.UserModel;
 import com.focados.foca.modules.users.database.repository.UserRepository;
@@ -28,6 +32,8 @@ public class CourseService {
     private final UserRepository userRepository;
     private final UserCourseService userCourseService;
     private final PeriodTemplateService periodTemplateService;
+    private final UserCourseRepository userCourseRepository;
+    private final PeriodInstanceService periodInstanceService;
 
     public CourseResponseDto create(CreateCourseDto dto) {
         UUID userId = AuthUtil.getAuthenticatedUserId();
@@ -44,7 +50,9 @@ public class CourseService {
 
         periodTemplateService.createPeriodsForCourse(course);
 
-        userCourseService.createUserCourseLink(user, course);
+        UserCourseModel ownerUserCourse = userCourseService.createUserCourseLink(user, course);
+
+        periodInstanceService.createPeriodInstancesForUserCourse(ownerUserCourse);
 
 
         return CourseMapper.toResponse(course);
@@ -104,6 +112,49 @@ public class CourseService {
         return CourseMapper.toResponse(course);
     }
 
+    public CourseResponseDto updateInfo(UUID id, UpdateCourseInfoDto dto) {
+        UUID userId = AuthUtil.getAuthenticatedUserId();
+
+        CourseModel course = courseRepository.findById(id)
+                .orElseThrow(CourseNotFoundException::new);
+
+        if (!course.getCreatedBy().getId().equals(userId)) {
+            throw new UserNotAllowedException();
+        }
+
+        if (dto.getStartDate() != null && dto.getEndDate() != null) {
+            if (dto.getEndDate().isBefore(dto.getStartDate())) {
+                throw new InvalidCourseDatesException();
+            }
+        }
+
+        if (dto.getInstitutionName() != null)
+            course.setInstitutionName(dto.getInstitutionName());
+
+        if (dto.getStartDate() != null)
+            course.setStartDate(dto.getStartDate());
+
+        if (dto.getEndDate() != null)
+            course.setEndDate(dto.getEndDate());
+
+        if (dto.getAddress() != null)
+            course.setAddress(dto.getAddress());
+
+        if (dto.getOnline() != null)
+            course.setOnline(dto.getOnline());
+
+        if (dto.getPhones() != null)
+            course.setPhones(dto.getPhones());
+
+        if (dto.getEmails() != null)
+            course.setEmails(dto.getEmails());
+
+        courseRepository.save(course);
+
+        return CourseMapper.toResponse(course);
+    }
+
+
     public void deleteById(UUID id) {
         UUID userId = AuthUtil.getAuthenticatedUserId();
         CourseModel course = courseRepository.findById(id)
@@ -112,8 +163,12 @@ public class CourseService {
         if (!course.getCreatedBy().getId().equals(userId)) {
             throw new UserNotAllowedException();
         }
+
+        // (cascade vai deletar UserCourses, Periods, Disciplines, etc.)
+        System.out.println("[ADMIN] Deletando course template " + id + " fisicamente");
         courseRepository.delete(course);
     }
+
 
     public boolean updateCourseIfChanged(UpdateCourseDto dto, CourseModel course) {
         boolean changed = false;

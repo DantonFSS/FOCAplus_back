@@ -1,6 +1,6 @@
 package com.focados.foca.modules.score.domain.services;
 
-import com.focados.foca.modules.materias.database.repository.DisciplineInstanceRepository;
+import com.focados.foca.modules.disciplines.database.repository.DisciplineInstanceRepository;
 import com.focados.foca.modules.courses.database.repository.UserCourseRepository;
 import com.focados.foca.modules.score.database.entity.ScoreRecordModel;
 import com.focados.foca.modules.score.database.entity.enums.ScoreSourceType;
