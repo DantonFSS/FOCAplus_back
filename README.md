@@ -92,12 +92,6 @@ Ou usando Docker:
 docker-compose up
 ```
 
-## 📚 Documentação da API
-
-A documentação da API está disponível através do Swagger UI em:
-
-- **Swagger UI**: `http://localhost:8080/foca.html`
-- **API Docs**: `http://localhost:8080/foca`
 
 ## 🔐 Autenticação
 
