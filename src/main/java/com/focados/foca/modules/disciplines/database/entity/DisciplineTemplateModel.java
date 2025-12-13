@@ -27,6 +27,9 @@ public class DisciplineTemplateModel {
     @Column(columnDefinition = "TEXT", nullable = true)
     private String notes;
 
+    @Column(name = "archived", nullable = false)
+    private boolean archived = false;
+
     @OneToMany(
             mappedBy = "disciplineTemplate",
             cascade = CascadeType.ALL,

@@ -2,6 +2,7 @@ package com.focados.foca.modules.disciplines.domain.services;
 
 import com.focados.foca.modules.courses.database.entity.CourseModel;
 import com.focados.foca.modules.courses.database.entity.UserCourseModel;
+import com.focados.foca.modules.courses.database.entity.enums.UserCourseRole;
 import com.focados.foca.modules.courses.database.repository.UserCourseRepository;
 import com.focados.foca.modules.disciplines.database.entity.DisciplineInstanceModel;
 import com.focados.foca.modules.disciplines.database.entity.DisciplineTemplateModel;
@@ -16,6 +17,8 @@ import com.focados.foca.modules.disciplines.domain.dtos.response.DisciplineInsta
 import com.focados.foca.modules.periods.database.entity.PeriodInstanceModel;
 import com.focados.foca.modules.periods.database.entity.PeriodTemplateModel;
 import com.focados.foca.modules.periods.database.repository.PeriodInstanceRepository;
+import com.focados.foca.modules.users.domain.services.AuthUtil;
+import com.focados.foca.shared.common.utils.exceptions.UserNotAllowedException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -128,7 +131,8 @@ public class DisciplineInstanceService {
     }
 
     public List<DisciplineInstanceResponseDto> getAllByPeriodInstanceId(UUID periodInstanceId) {
-        return disciplineInstanceRepository.findByPeriodInstanceId(periodInstanceId)
+        return disciplineInstanceRepository
+                .findByPeriodInstanceIdWithNonArchivedTemplates(periodInstanceId)
                 .stream()
                 .map(DisciplineInstanceMapper::toResponse)
                 .toList();
@@ -156,9 +160,35 @@ public class DisciplineInstanceService {
     }
 
     public void deleteById(UUID id) {
-        if (!disciplineInstanceRepository.existsById(id)) {
-            throw new IllegalArgumentException("Disciplina não encontrada");
+        DisciplineInstanceModel instance = disciplineInstanceRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Disciplina não encontrada"));
+
+        // Verifica ownership
+        UUID userId = AuthUtil.getAuthenticatedUserId();
+        if (!instance.getUserCourse().getUser().getId().equals(userId)) {
+            throw new UserNotAllowedException();
         }
+
+        // ✅ Detecta se é OWNER
+        UserCourseModel userCourse = instance.getUserCourse();
+        DisciplineTemplateModel template = instance.getDisciplineTemplate();
+
+        if (userCourse.getRole() == UserCourseRole.OWNER) {
+            // ✅ OWNER: Verifica se pode arquivar/deletar template
+            long instanceCount = disciplineInstanceRepository.countByDisciplineTemplateId(template.getId());
+
+            if (instanceCount > 1) {
+                // Outras pessoas têm: ARQUIVA template
+                template.setArchived(true);
+                disciplineTemplateRepository.save(template);
+            } else {
+                // Única instance: DELETA template
+                disciplineTemplateRepository.delete(template);
+                return; // Instance será deletada por cascade
+            }
+        }
+
+        // MEMBER ou OWNER (com template arquivado): Deleta apenas instance
         disciplineInstanceRepository.deleteById(id);
     }
 }

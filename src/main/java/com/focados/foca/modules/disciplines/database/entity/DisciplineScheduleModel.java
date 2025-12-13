@@ -2,6 +2,9 @@ package com.focados.foca.modules.disciplines.database.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
+
 import java.time.LocalTime;
 import java.util.UUID;
 
@@ -17,6 +20,7 @@ public class DisciplineScheduleModel {
 
     @ManyToOne(optional = false)
     @JoinColumn(name = "discipline_instance_id")
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private DisciplineInstanceModel disciplineInstance;
 
     @Column(nullable = false)

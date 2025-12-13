@@ -2,6 +2,8 @@ package com.focados.foca.modules.courses.database.repository;
 
 import com.focados.foca.modules.courses.database.entity.UserCourseModel;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -14,5 +16,7 @@ public interface UserCourseRepository extends JpaRepository<UserCourseModel, UUI
     boolean existsByUserIdAndCourseTemplateId(UUID userId, UUID courseTemplateId);
     Optional<UserCourseModel> findByUserIdAndCourseTemplateId(UUID userId, UUID courseTemplateId);
     long countByCourseTemplateId(UUID courseTemplateId);
-
+    // Adicionar query custom
+    @Query("SELECT uc FROM UserCourseModel uc WHERE uc.user.id = :userId AND uc.courseTemplate.archived = false")
+    List<UserCourseModel> findByUserIdWithNonArchivedCourses(@Param("userId") UUID userId);
 }

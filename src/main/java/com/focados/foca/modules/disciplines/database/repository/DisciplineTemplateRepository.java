@@ -8,4 +8,5 @@ import java.util.UUID;
 
 public interface DisciplineTemplateRepository extends JpaRepository<DisciplineTemplateModel, UUID> {
     List<DisciplineTemplateModel> findByPeriodTemplateId(UUID periodTemplateId);
+    List<DisciplineTemplateModel> findByPeriodTemplateIdAndArchivedFalseOrderByNameAsc(UUID periodTemplateId);
 }

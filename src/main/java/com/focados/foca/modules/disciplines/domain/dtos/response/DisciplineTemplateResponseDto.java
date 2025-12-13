@@ -9,4 +9,5 @@ public class DisciplineTemplateResponseDto {
     private UUID periodTemplateId;
     private String name;
     private String notes;
+    private boolean archived;
 }

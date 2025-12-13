@@ -12,4 +12,5 @@ public class PeriodTemplateResponseDto {
     private Integer position;
     private LocalDate plannedStart;
     private LocalDate plannedEnd;
+    private boolean archived;
 }

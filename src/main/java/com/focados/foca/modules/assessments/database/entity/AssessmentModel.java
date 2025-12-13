@@ -3,6 +3,8 @@ package com.focados.foca.modules.assessments.database.entity;
 import com.focados.foca.modules.disciplines.database.entity.DisciplineInstanceModel;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import java.time.LocalTime;
 import java.time.ZonedDateTime;
@@ -22,6 +24,7 @@ public class AssessmentModel {
 
     @ManyToOne(optional = false)
     @JoinColumn(name = "discipline_instance_id", nullable = false)
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private DisciplineInstanceModel disciplineInstance;
 
     @Column(nullable = false)

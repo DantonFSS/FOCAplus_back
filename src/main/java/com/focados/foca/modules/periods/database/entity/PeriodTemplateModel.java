@@ -37,6 +37,9 @@ public class PeriodTemplateModel {
     @Column(name = "planned_end")
     private LocalDate plannedEnd;
 
+    @Column(name = "archived", nullable = false)
+    private boolean archived = false;
+
     @OneToMany(
             mappedBy = "periodTemplate",
             cascade = CascadeType.ALL,

@@ -9,6 +9,9 @@ import com.focados.foca.modules.studySessions.database.entity.StudySessionModel;
 import com.focados.foca.modules.tasks.database.entity.TaskModel;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
+
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.ZonedDateTime;
@@ -32,10 +35,12 @@ public class DisciplineInstanceModel {
 
     @ManyToOne(optional = true)
     @JoinColumn(name = "discipline_template_id")
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private DisciplineTemplateModel disciplineTemplate;
 
     @ManyToOne(optional = true)
     @JoinColumn(name = "period_instance_id")
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private PeriodInstanceModel periodInstance;
 
     private LocalDate plannedStart;

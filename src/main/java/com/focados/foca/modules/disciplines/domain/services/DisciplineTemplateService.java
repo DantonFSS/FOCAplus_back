@@ -1,5 +1,8 @@
 package com.focados.foca.modules.disciplines.domain.services;
 
+import com.focados.foca.modules.courses.database.entity.UserCourseModel;
+import com.focados.foca.modules.courses.database.repository.UserCourseRepository;
+import com.focados.foca.modules.disciplines.database.repository.DisciplineInstanceRepository;
 import com.focados.foca.modules.disciplines.domain.dtos.mappers.DisciplineTemplateMapper;
 import com.focados.foca.modules.disciplines.domain.dtos.request.BatchCreateDisciplineTemplateDto;
 import com.focados.foca.modules.disciplines.domain.dtos.request.CreateDisciplineTemplateDto;
@@ -9,6 +12,7 @@ import com.focados.foca.modules.disciplines.database.entity.DisciplineTemplateMo
 import com.focados.foca.modules.periods.database.entity.PeriodTemplateModel;
 import com.focados.foca.modules.disciplines.database.repository.DisciplineTemplateRepository;
 import com.focados.foca.modules.periods.database.repository.PeriodTemplateRepository;
+import com.focados.foca.modules.users.domain.services.AuthUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -23,6 +27,8 @@ public class DisciplineTemplateService {
     private final DisciplineTemplateRepository disciplineTemplateRepository;
     private final PeriodTemplateRepository periodTemplateRepository;
     private final DisciplineInstanceService disciplineInstanceService;
+    private final DisciplineInstanceRepository disciplineInstanceRepository;
+    private final UserCourseRepository userCourseRepository;
 
     public DisciplineTemplateResponseDto create(CreateDisciplineTemplateDto dto) {
         PeriodTemplateModel periodTemplate = periodTemplateRepository.findById(dto.getPeriodTemplateId())
@@ -90,9 +96,12 @@ public class DisciplineTemplateService {
     }
 
     public void deleteById(UUID id) {
-        if (!disciplineTemplateRepository.existsById(id)) {
-            throw new IllegalArgumentException("Disciplina não encontrada");
-        }
+        DisciplineTemplateModel template = disciplineTemplateRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Disciplina não encontrada"));
+
+        long instanceCount = disciplineInstanceRepository.countByDisciplineTemplateId(id);
+        System.out.println("[ADMIN] Deletando template " + id + " e " + instanceCount + " instances");
+
         disciplineTemplateRepository.deleteById(id);
     }
 }

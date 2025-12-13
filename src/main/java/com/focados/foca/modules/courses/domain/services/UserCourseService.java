@@ -44,7 +44,7 @@ public class UserCourseService {
 
     public List<UserCourseResponseDto> findAllByUser() {
         UUID userId = AuthUtil.getAuthenticatedUserId();
-        List<UserCourseModel> userCourses = userCourseRepository.findByUserId(userId);
+        List<UserCourseModel> userCourses = userCourseRepository.findByUserIdWithNonArchivedCourses(userId);
         return userCourses.stream().map(UserCourseMapper::toResponse).toList();
     }
 
@@ -107,10 +107,31 @@ public class UserCourseService {
         UUID userId = AuthUtil.getAuthenticatedUserId();
         UserCourseModel userCourse = userCourseRepository.findById(id)
                 .orElseThrow(UserCourseNotFoundException::new);
+
         if (!userCourse.getUser().getId().equals(userId)) {
             throw new UserNotAllowedException();
         }
-        userCourseRepository.delete(userCourse);
+
+        CourseModel course = userCourse.getCourseTemplate();
+
+        // ✅ LÓGICA UNIFICADA
+        if (userCourse.getRole() == UserCourseRole.OWNER) {
+            long totalUsers = userCourseRepository.countByCourseTemplateId(course.getId());
+
+            if (totalUsers > 1) {
+                // Há MEMBERs: Arquiva template para preservar para eles
+                course.setArchived(true);
+                courseRepository.save(course);
+                // Deleta UserCourse do OWNER (instances cascade)
+                userCourseRepository.delete(userCourse);
+            } else {
+                // Único usuário: Deleta template completamente (cascade tudo)
+                courseRepository.delete(course);
+            }
+        } else {
+            // MEMBER: Apenas remove seu vínculo (instances cascade)
+            userCourseRepository.delete(userCourse);
+        }
     }
 
     public UserCourseResponseDto joinCourseByShareCode(String shareCode) {

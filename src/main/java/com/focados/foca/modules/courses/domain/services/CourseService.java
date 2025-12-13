@@ -164,16 +164,8 @@ public class CourseService {
             throw new UserNotAllowedException();
         }
 
-        long totalUsers = userCourseRepository.countByCourseTemplateId(course.getId());
-
-        if (totalUsers > 1) {
-            // ✅ Só arquiva
-            course.setArchived(true);
-            courseRepository.save(course);
-            return;
-        }
-
-        // ✅ Aqui é o ÚNICO usuário → pode apagar tudo fisicamente
+        // (cascade vai deletar UserCourses, Periods, Disciplines, etc.)
+        System.out.println("[ADMIN] Deletando course template " + id + " fisicamente");
         courseRepository.delete(course);
     }
 

@@ -4,6 +4,8 @@ import com.focados.foca.modules.courses.database.entity.CourseModel;
 import com.focados.foca.modules.courses.database.entity.UserCourseModel;
 import com.focados.foca.modules.courses.database.repository.CourseRepository;
 import com.focados.foca.modules.courses.database.repository.UserCourseRepository;
+import com.focados.foca.modules.disciplines.database.entity.DisciplineInstanceModel;
+import com.focados.foca.modules.disciplines.database.repository.DisciplineInstanceRepository;
 import com.focados.foca.modules.periods.database.entity.PeriodInstanceModel;
 import com.focados.foca.modules.periods.database.entity.PeriodTemplateModel;
 import com.focados.foca.modules.periods.database.repository.PeriodInstanceRepository;
@@ -13,6 +15,7 @@ import com.focados.foca.modules.periods.domain.dtos.mappers.PeriodTemplateMapper
 import com.focados.foca.modules.periods.domain.dtos.request.CreatePeriodTemplateDto;
 import com.focados.foca.modules.periods.domain.dtos.request.UpdatePeriodTemplateDto;
 import com.focados.foca.modules.periods.domain.dtos.response.PeriodTemplateResponseDto;
+import com.focados.foca.modules.users.domain.services.AuthUtil;
 import com.focados.foca.shared.common.utils.exceptions.InvalidCourseDatesException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -31,6 +34,7 @@ public class PeriodTemplateService {
     private final CourseRepository courseRepository;
     private final UserCourseRepository userCourseRepository;
     private final PeriodInstanceRepository periodInstanceRepository;
+    private final DisciplineInstanceRepository disciplineInstanceRepository;
 
     private static final Map<DivisionType, String> DIVISION_TYPE_PT = new HashMap<>();
     static {
@@ -226,9 +230,14 @@ public class PeriodTemplateService {
     }
 
     public void deleteById(UUID id) {
-        if (!periodTemplateRepository.existsById(id)) {
-            throw new IllegalArgumentException("Período não encontrado");
-        }
+        PeriodTemplateModel template = periodTemplateRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Período não encontrado"));
+
+        // Aviso de operação destrutiva
+        long instanceCount = periodInstanceRepository.countByPeriodTemplateId(id);
+        System.out.println("[ADMIN] Deletando template " + id + " e " + instanceCount + " instances");
+
+        // Deleta template (instances serão deletadas por cascade se configurado)
         periodTemplateRepository.deleteById(id);
     }
 }

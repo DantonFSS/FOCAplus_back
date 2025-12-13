@@ -4,6 +4,8 @@ import com.focados.foca.modules.disciplines.database.entity.DisciplineInstanceMo
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
@@ -22,6 +24,7 @@ public class TaskModel {
 
     @ManyToOne(optional = false)
     @JoinColumn(name = "discipline_instance_id", nullable = false)
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private DisciplineInstanceModel disciplineInstance;
 
     @Column(nullable = false)
